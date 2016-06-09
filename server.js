@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
+const _ = require('underscore');
 
 var upload = multer(); // for parsing multipart/form-data
 var app = express();
@@ -27,14 +28,8 @@ app.get('/todos/:id', (req, res) => {
   if (typeof todoId != 'number') {
     res.status(404).send();
   } else {
-    var matchesTodo;
-    for (var i = 0; i < todos.length; i++) {
-      if (todos[i].id === todoId) {
-        matchesTodo = todos[i];
-        break;
-      }
-    }
-    if (typeof matchesTodo === 'undefined') {
+    var matchesTodo = _.findWhere(todos, {id: todoId});
+    if (!matchesTodo) {
       res.status(404).send();
     } else {
       res.json(matchesTodo);
@@ -44,8 +39,13 @@ app.get('/todos/:id', (req, res) => {
 
 // POST /todos
 app.post('/todos', upload.array(), (req, res, next) => {
-  var body = req.body;
+  var body =  _.pick(req.body, 'description', 'completed');
 
+  if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
+    return res.status(400).send();
+  }
+
+  body.description = body.description.trim();
   body.id = todos.length + 1;
   todos.push(body);
 

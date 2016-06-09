@@ -52,6 +52,22 @@ app.post('/todos', upload.array(), (req, res, next) => {
   res.json(body);
 });
 
+//DELETE /todos/:id
+app.delete('/todos/:id', (req, res) => {
+  var todoId = +req.params.id; // 123abc -> NaN
+  if (isNaN(todoId)) {
+    res.status(404).json({"error": "id is in incorrect format"});
+  } else {
+    var matchesTodo = _.findWhere(todos, {id: todoId});
+    if (matchesTodo) {
+      todos = _.without(todos, matchesTodo);
+      res.json(matchesTodo);
+    } else {
+      res.status(404).json({"error": "no todo found with that id"});
+    }
+  }
+});
+
 app.listen(PORT, function () {
   console.log('Express listening on port ' + PORT + '!');
 });

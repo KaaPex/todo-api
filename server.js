@@ -19,7 +19,16 @@ app.get('/', (req, res) => {
 
 // GET / todos
 app.get('/todos', (req, res) => {
-  res.json(todos);
+  var queryParams = req.query;
+  var filteredTodos = todos;
+
+  if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'true') {
+    filteredTodos = _.where(todos, {completed: true});
+  } else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false') {
+    filteredTodos = _.where(todos, {completed: false});
+  }
+
+  res.json(filteredTodos);
 });
 
 // GET /todos/:id
@@ -71,7 +80,7 @@ app.delete('/todos/:id', (req, res) => {
 // PUT /todos/:id
 app.put('/todos/:id', (req, res) => {
   var todoId = +req.params.id; // 123abc -> NaN
-  if (isNaN(todoId)) {
+  if (_.isNaN(todoId)) {
     res.status(404).json({"error": "id is in incorrect format"});
   } else {
     var matchesTodo = _.findWhere(todos, {id: todoId});

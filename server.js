@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
   res.send('Todo API Root');
 });
 
-// GET / todos
+// GET / todos?completed=false&q=work
 app.get('/todos', (req, res) => {
   var queryParams = req.query;
   var filteredTodos = todos;
@@ -26,6 +26,12 @@ app.get('/todos', (req, res) => {
     filteredTodos = _.where(todos, {completed: true});
   } else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false') {
     filteredTodos = _.where(todos, {completed: false});
+  }
+
+  if(queryParams.hasOwnProperty('q')){
+    filteredTodos = _.filter(filteredTodos, (todo) => {
+      return todo.description.toLowerCase().indexOf(queryParams.q.toLowerCase()) ;
+    });
   }
 
   res.json(filteredTodos);

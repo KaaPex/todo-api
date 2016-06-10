@@ -1,0 +1,17 @@
+{
+  "development": {
+    "username": "test",
+    "password": "test",
+    "database": "todo",
+    "host": "127.0.0.1",
+    "port": "5432",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "ekcdatmievwjof",
+    "password": "update me",
+    "database": "d47piknn4sa4sv",
+    "host": "ec2-54-83-27-147.compute-1.amazonaws.com",
+    "dialect": "postgres"
+  }
+}

@@ -65,9 +65,9 @@ app.get('/todos/:id', (req, res) => {
 app.post('/todos', upload.array(), (req, res, next) => {
   var body = _.pick(req.body, 'description', 'completed');
 
-  db.todo.create(body).then(function(todo) {
+  db.todo.create(body).then((todo) => {
     res.json(todo);
-  }, function(e) {
+  }, (e) => {
     res.status(400).json(e);
   });
 
@@ -81,17 +81,22 @@ app.delete('/todos/:id', (req, res) => {
       "error": "id is in incorrect format"
     });
   } else {
-    var matchesTodo = _.findWhere(todos, {
-      id: todoId
+
+    db.todo.destroy({
+      where: {
+        id: todoId
+      }
+    }).then((rowsDeleted) => {
+      if (rowsDeleted === 0) {
+        res.status(404).json({
+          error: 'No todo with id: ' + todoId
+        });
+      } else {
+        res.status(204).send();
+      }
+    }, (e) => {
+      res.status(500).send();
     });
-    if (matchesTodo) {
-      todos = _.without(todos, matchesTodo);
-      res.json(matchesTodo);
-    } else {
-      res.status(404).json({
-        "error": "no todo found with that id"
-      });
-    }
   }
 });
 

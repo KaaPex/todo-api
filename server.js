@@ -22,25 +22,25 @@ app.get('/', (req, res) => {
 // GET / todos?completed=false&q=work
 app.get('/todos', (req, res) => {
   var queryParams = req.query;
-  var where = {};
+  var filteredTodos = todos;
 
-  if (queryParams.hasOwnProperty('completed')  && (queryParams.completed === 'true')) {
-    where.completed = true;
-  } else if (queryParams.hasOwnProperty('completed')  && (queryParams.completed === 'false')) {
-    where.completed = false;
+  if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'true') {
+    filteredTodos = _.where(todos, {
+      completed: true
+    });
+  } else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false') {
+    filteredTodos = _.where(todos, {
+      completed: false
+    });
   }
 
-  if (queryParams.hasOwnProperty('q') && queryParams.q.length > 0) {
-    where.description = {
-      slike: "%" + queryParams.q + "%"
-    };
+  if (queryParams.hasOwnProperty('q')) {
+    filteredTodos = _.filter(filteredTodos, (todo) => {
+      return todo.description.toLowerCase().indexOf(queryParams.q.toL);
+    });
   }
 
-  db.todo.findAll({where: where}).then( (todos) => {
-    res.json(todos);
-  }, (e) => {
-    res.status(500).json(e);
-  });
+  res.json(filteredTodos);
 });
 
 // GET /todos/:id
@@ -51,7 +51,7 @@ app.get('/todos/:id', (req, res) => {
   } else {
      db.todo.findById(todoId).then( (todo) => {
       if (!!todo) {
-        res.json(todo);
+        res.json(todo.toJSON());
       } else {
         res.status(404).send();
       }

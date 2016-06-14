@@ -1,5 +1,5 @@
 "use strict";
-module.exports = function(sequelize, DataType) {
+module.exports = (sequelize, DataType) => {
   var todo = sequelize.define('todo', {
     description: {
       type: DataType.STRING,

@@ -1,3 +1,4 @@
+"use strict";
 const path = require('path');
 const Sequelize = require('sequelize');
 var env = process.env.NODE_ENV || 'development';

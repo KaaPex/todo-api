@@ -1,3 +1,4 @@
+"use strict";
 const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
@@ -48,14 +49,15 @@ app.get('/todos/:id', (req, res) => {
   if (typeof todoId != 'number') {
     res.status(404).send();
   } else {
-    var matchesTodo = _.findWhere(todos, {
-      id: todoId
+     db.todo.findById(todoId).then( (todo) => {
+      if (!!todo) {
+        res.json(todo.toJSON());
+      } else {
+        res.status(404).send();
+      }
+    }, (e) => {
+      res.status(400).json(e);
     });
-    if (!matchesTodo) {
-      res.status(404).send();
-    } else {
-      res.json(matchesTodo);
-    }
   }
 });
 

@@ -39,7 +39,7 @@ app.get('/todos', (req, res) => {
   db.todo.findAll({where: where}).then( (todos) => {
     res.json(todos);
   }, (e) => {
-    res.status(500).json(e);
+    res.status(500).send();
   });
 });
 

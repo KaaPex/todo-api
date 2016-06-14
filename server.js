@@ -32,7 +32,7 @@ app.get('/todos', (req, res) => {
 
   if (queryParams.hasOwnProperty('q') && queryParams.q.length > 0) {
     where.description = {
-      slike: "%" + queryParams.q + "%"
+      $like: "%" + queryParams.q + "%"
     };
   }
 

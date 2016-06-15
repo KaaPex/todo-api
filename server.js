@@ -140,13 +140,13 @@ app.post('/users',upload.array() , (req, res, next) => {
   var body = _.pick(req.body, 'email', 'password');
 
   db.user.create(body).then((user) => {
-    res.json(user.toJSON());
+    res.json(user.toPublicJSON());
   }, (e) => {
     res.status(400).json(e);
   });
 });
 
-db.sequelize.sync().then(function() {
+db.sequelize.sync({forcr: true}).then(function() {
   app.listen(PORT, function() {
     console.log('Express listening on port ' + PORT + '!');
   });

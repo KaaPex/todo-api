@@ -24,7 +24,7 @@ module.exports = (sequelize, DataType) => {
       validate: {
         len: [7, 100]
       },
-      set: (value) => {
+      set:function (value)  {
         let salt = bcrypt.genSaltSync(10);
         let hashedPassword = bcrypt.hashedSync(value, salt);
 
@@ -41,8 +41,30 @@ module.exports = (sequelize, DataType) => {
         }
       }
     },
+    classMethods: {
+      authenticate: function (body) {
+        return new Promise( (resolve, reject) => {
+          if (typeof body.email !== 'string' || typeof body.password !== 'string') {
+            return reject();
+          }
+
+          User.findOne({
+            where: {
+              email: body.email
+            }
+          }).then( (user) => {
+            if (!user || !bcrypt.compareSync(body.password, user.get('password_hash'))) {
+              return reject();
+            }
+            resolve(user);
+          }, (e) => {
+            return reject();
+          });
+        });
+      }
+    },
     instanceMethods: {
-      toPublicJSON: () => {
+      toPublicJSON: function () {
         let json = this.toJSON();
         return _.pick(json,'id', 'email', 'createdAt', 'updatedAt');
       }

@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const _ = require('underscore');
 const db = require('./db.js');
+const bcrypt = require('bcrypt');
 
 var upload = multer(); // for parsing multipart/form-data
 var app = express();
@@ -146,7 +147,18 @@ app.post('/users',upload.array() , (req, res, next) => {
   });
 });
 
-db.sequelize.sync({forcr: true}).then(function() {
+// POST /users/login
+app.post('/users/login',upload.array() , (req, res, next) => {
+  var body = _.pick(req.body, 'email', 'password');
+
+  db.user.authenticate(body).then( (user) => {
+    res.json(user.toPublicJSON());
+  }, (e) =>  {
+    res.status(401).send();
+  });
+});
+
+db.sequelize.sync({force: true}).then(function() {
   app.listen(PORT, function() {
     console.log('Express listening on port ' + PORT + '!');
   });
